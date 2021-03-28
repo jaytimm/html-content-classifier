@@ -27,8 +27,8 @@ ts0 <- lapply(terms, quicknews::ggl_get_newsmeta) %>%
 txts0 <- qnews_extract_article(x = ts0$link, id = ts0$id)
 ```
 
-> *Example text*. Content contained in p-nodes; however, not all content
-> contained in p-nodes is relevant.
+> **Example text**. Content contained in p-nodes; however, not all
+> content contained in p-nodes is relevant.
 
 ``` r
 txts0 %>% filter(id == 11) %>% knitr::kable()
@@ -77,9 +77,9 @@ txts0 %>% filter(id == 11) %>% knitr::kable()
 | 11  | h1   | Subscribe Today                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | 11  | p    | Copyright © The Mining Journal \| <https://www.miningjournal.net> \| 249 W. Washington, Marquette, MI 49855 \| 906-228-2500 \| Ogden Newspapers \| The Nutting Company                                                                                                                                                                                                                                                                                                                                                                                               |
 
-> Previous appraoch via `boilerpipeR` – which is good – but not
-> fantastic – Java dependency – but it also the best that I have used in
-> R –
+## Previous appraoch
+
+Via `boilerpipeR`.
 
 ``` r
 y1 <- RCurl::getURL(ks, .encoding='UTF-8', ssl.verifypeer = TRUE,
@@ -90,7 +90,7 @@ cat(boilerpipeR::ArticleExtractor(y1))
 
     ## 14 people injured in suspected suicide bombing outside Catholic church in Indonesia
     ## By Jamaluddin Masrur, CNN, and Reuters
-    ## Updated 7:27 AM ET, Sun March 28, 2021
+    ## Updated 11:04 AM ET, Sun March 28, 2021
     ## A police officer stands guard near the church in Makassar, South Sulawesi, Indonesia after Sunday's explosion.
     ## Jakarta, Indonesia  (CNN)
     ## Fourteen people were hospitalized with injuries following a suspected suicide bombing outside a church in Makassar City, Indonesia, on Sunday, police said.
@@ -101,11 +101,12 @@ cat(boilerpipeR::ArticleExtractor(y1))
     ## There has been no immediate claim of responsibility for the attack. Police say the investigation with the anti-terror unit is ongoing.
     ## Authorities were looking into which networks the bombers came from and if the attack was linked to recent arrests of suspected militants, Reuters news agency reported Yuwono as saying.
     ## Read More
-    ## Indonesian president Joko Widodo strongly condemned the attack in a video broadcast, describing the attack as as an "act of terrorism," Reuters reported.
-    ## He urged people to remain calm and said the government would ensure that everybody can worship freely, "without fear."
-    ## Search
+    ## Indonesian president Joko Widodo strongly condemned the attack in a video broadcast, describing the attack as as an "act of terrorism."
+    ## "I ask the public to remain calm in carrying out their worship" Widodo said adding, "Terrorism is a crime against humanity and has nothing to do with any religion.
+    ## "For the victims who were injured, we pray for immediate healing" Widodo said, adding that a "thorough investigation" has been ordered into the incident.
+    ## Akanksha Sharma contributed reporting.
 
-## Manual annotation: `is_junk`
+## Manual annotation
 
 ``` r
 setwd(local_dir)
@@ -251,8 +252,8 @@ caret::confusionMatrix(prediction, y_test)
     ## 
     ##           Reference
     ## Prediction    0    1
-    ##          0 1061  184
-    ##          1  436 1287
+    ##          0 1063  186
+    ##          1  434 1285
     ##                                          
     ##                Accuracy : 0.7911         
     ##                  95% CI : (0.776, 0.8056)
@@ -263,19 +264,19 @@ caret::confusionMatrix(prediction, y_test)
     ##                                          
     ##  Mcnemar's Test P-Value : < 2.2e-16      
     ##                                          
-    ##             Sensitivity : 0.7088         
-    ##             Specificity : 0.8749         
-    ##          Pos Pred Value : 0.8522         
-    ##          Neg Pred Value : 0.7470         
+    ##             Sensitivity : 0.7101         
+    ##             Specificity : 0.8736         
+    ##          Pos Pred Value : 0.8511         
+    ##          Neg Pred Value : 0.7475         
     ##              Prevalence : 0.5044         
-    ##          Detection Rate : 0.3575         
-    ##    Detection Prevalence : 0.4195         
+    ##          Detection Rate : 0.3582         
+    ##    Detection Prevalence : 0.4208         
     ##       Balanced Accuracy : 0.7918         
     ##                                          
     ##        'Positive' Class : 0              
     ## 
 
-### Support Vector Machines
+### SVM
 
 ``` r
 setwd(local_dir)
