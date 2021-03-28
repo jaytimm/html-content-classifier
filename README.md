@@ -27,6 +27,9 @@ ts0 <- lapply(terms, quicknews::ggl_get_newsmeta) %>%
 txts0 <- qnews_extract_article(x = ts0$link, id = ts0$id)
 ```
 
+> *Example text*. Content contained in p-nodes; however, not all content
+> contained in p-nodes is relevant.
+
 ``` r
 txts0 %>% filter(id == 11) %>% knitr::kable()
 ```
@@ -76,7 +79,9 @@ txts0 %>% filter(id == 11) %>% knitr::kable()
 
 ## Manual annotation
 
-## Supervised node filtering
+## Feature-based node filtering
+
+> Sentence-ending:
 
 ``` r
 og$has_ellipses <- ifelse(grepl('\\.\\.\\.(.)?$', 
@@ -84,9 +89,7 @@ og$has_ellipses <- ifelse(grepl('\\.\\.\\.(.)?$',
 og$has_stop <-  ifelse(grepl('(\\.|\\!|\\?)(.)?$', trimws(og$text)), 1, 0)
 ```
 
-> important to remember here – the `has_latest` filter will kill
-> perfectly good sentences – however, they are filtered because they are
-> SEE MORE, and not apart of main article –
+> `See more stories`-issue:
 
 ``` r
 og$has_latest <- ifelse(grepl('^latest( .*)? news$|^more( .*)? stories$',
@@ -204,26 +207,26 @@ caret::confusionMatrix(prediction, y_test)
     ## 
     ##           Reference
     ## Prediction    0    1
-    ##          0 1079  172
-    ##          1  418 1299
+    ##          0 1074  190
+    ##          1  423 1281
     ##                                           
-    ##                Accuracy : 0.8012          
-    ##                  95% CI : (0.7864, 0.8154)
+    ##                Accuracy : 0.7935          
+    ##                  95% CI : (0.7784, 0.8079)
     ##     No Information Rate : 0.5044          
     ##     P-Value [Acc > NIR] : < 2.2e-16       
     ##                                           
-    ##                   Kappa : 0.603           
+    ##                   Kappa : 0.5875          
     ##                                           
     ##  Mcnemar's Test P-Value : < 2.2e-16       
     ##                                           
-    ##             Sensitivity : 0.7208          
-    ##             Specificity : 0.8831          
-    ##          Pos Pred Value : 0.8625          
-    ##          Neg Pred Value : 0.7566          
+    ##             Sensitivity : 0.7174          
+    ##             Specificity : 0.8708          
+    ##          Pos Pred Value : 0.8497          
+    ##          Neg Pred Value : 0.7518          
     ##              Prevalence : 0.5044          
-    ##          Detection Rate : 0.3635          
-    ##    Detection Prevalence : 0.4215          
-    ##       Balanced Accuracy : 0.8019          
+    ##          Detection Rate : 0.3619          
+    ##    Detection Prevalence : 0.4259          
+    ##       Balanced Accuracy : 0.7941          
     ##                                           
     ##        'Positive' Class : 0               
     ## 
@@ -245,26 +248,26 @@ caret::confusionMatrix(prediction, y_test)
     ## 
     ##           Reference
     ## Prediction    0    1
-    ##          0 1289   79
-    ##          1  208 1392
-    ##                                           
-    ##                Accuracy : 0.9033          
-    ##                  95% CI : (0.8921, 0.9137)
-    ##     No Information Rate : 0.5044          
-    ##     P-Value [Acc > NIR] : < 2.2e-16       
-    ##                                           
-    ##                   Kappa : 0.8067          
-    ##                                           
-    ##  Mcnemar's Test P-Value : 4.169e-14       
-    ##                                           
-    ##             Sensitivity : 0.8611          
-    ##             Specificity : 0.9463          
-    ##          Pos Pred Value : 0.9423          
-    ##          Neg Pred Value : 0.8700          
-    ##              Prevalence : 0.5044          
-    ##          Detection Rate : 0.4343          
-    ##    Detection Prevalence : 0.4609          
-    ##       Balanced Accuracy : 0.9037          
-    ##                                           
-    ##        'Positive' Class : 0               
+    ##          0 1289   75
+    ##          1  208 1396
+    ##                                          
+    ##                Accuracy : 0.9046         
+    ##                  95% CI : (0.8935, 0.915)
+    ##     No Information Rate : 0.5044         
+    ##     P-Value [Acc > NIR] : < 2.2e-16      
+    ##                                          
+    ##                   Kappa : 0.8094         
+    ##                                          
+    ##  Mcnemar's Test P-Value : 4.275e-15      
+    ##                                          
+    ##             Sensitivity : 0.8611         
+    ##             Specificity : 0.9490         
+    ##          Pos Pred Value : 0.9450         
+    ##          Neg Pred Value : 0.8703         
+    ##              Prevalence : 0.5044         
+    ##          Detection Rate : 0.4343         
+    ##    Detection Prevalence : 0.4596         
+    ##       Balanced Accuracy : 0.9050         
+    ##                                          
+    ##        'Positive' Class : 0              
     ## 
