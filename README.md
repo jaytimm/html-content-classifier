@@ -1,12 +1,8 @@
 ## Introduction
 
-> Generic Extraction of main text content from HTML files; removal of
-> ads, sidebars and headers using the boilerpipe
-> (<http://code.google.com/p/boilerpipe/>) Java library
-
-> boilerpipe provides algorithms to detect and remove the surplus
-> “clutter” (boilerplate, templates) around the main textual content of
-> a web page.
+> Extract main text content from web page. Remove boilerplate, ads,
+> non-relevant content. Utilizing both supervised and unsupervised
+> approaches.
 
 ``` r
 if (!require("pacman")) install.packages("pacman")
@@ -38,30 +34,27 @@ txts0 <- qnews_extract_article(x = ts0$link, id = ts0$id)
 
 ## Manual annotation
 
-``` r
-setwd(local_dir)
-og <- readRDS('final_annotation.rds')
-```
-
 ## Supervised node filtering
 
 ``` r
-og$has_ellipses <- ifelse(grepl('\\.\\.\\.(.)?$', trimws(og$text)), 1, 0)
+og$has_ellipses <- ifelse(grepl('\\.\\.\\.(.)?$', 
+                                trimws(og$text)), 1, 0)
+og$has_stop <-  ifelse(grepl('(\\.|\\!|\\?)(.)?$', trimws(og$text)), 1, 0)
+```
 
-og$has_latest <- ifelse(grepl('^latest( .*)? news$|^more( .*)? stories$', #|^more( .*)? news$
+> important to remember here – the `has_latest` filter will kill
+> perfectly good sentences – however, they are filtered because they are
+> SEE MORE, and not apart of main article –
+
+``` r
+og$has_latest <- ifelse(grepl('^latest( .*)? news$|^more( .*)? stories$',
                               trimws(og$text),
                               ignore.case = T), 
                         1, NA)
 
 og$has_latest[og$place == 1] <- 0
 og$has_latest <- zoo::na.locf(og$has_latest)
-
-## important to remember here -- the `has_latest` filter will kill perfectly good sentences -- however, they are filtered because they are SEE MORE, and not apart of main article -- 
-
-og$has_stop <-  ifelse(grepl('(\\.|\\!|\\?)(.)?$', trimws(og$text)), 1, 0)
 ```
-
-### 
 
 ``` r
 f0 <- subset(og, type == 'p')
@@ -91,12 +84,11 @@ table(f1$is_junk)
 
 ``` r
 clr_spacify_txt <- function (text) {
-
-  ## hashtags kilt here --
   t1 <- tokenizers::tokenize_ptb(text, lowercase = TRUE)
-  ## Remove punct
-  t2 <- lapply(t1, gsub, pattern = '([a-z0-9])([[:punct:]])$', replacement = '\\1 \\2')
-  t3 <- lapply(t2, gsub, pattern = '^([[:punct:]])([a-z0-9])', replacement = '\\1 \\2')
+  t2 <- lapply(t1, gsub, pattern = '([a-z0-9])([[:punct:]])$', 
+               replacement = '\\1 \\2')
+  t3 <- lapply(t2, gsub, pattern = '^([[:punct:]])([a-z0-9])', 
+               replacement = '\\1 \\2')
   t4 <- lapply(t3, paste0, collapse = ' ')
   unlist(t4) ####
 }
@@ -121,7 +113,7 @@ fdtm <- data.frame(as.matrix(dtm))
 fdtm0 <- janitor::clean_names(fdtm)
 ```
 
-### Using SMOTE –
+### Using SMOTE
 
 ``` r
 z0 <- cbind(y = as.factor(f1$is_junk), fdtm0)
@@ -130,20 +122,7 @@ ds_rec <- recipes::recipe(y ~ ., data = z0) %>%
   recipes::step_meanimpute(recipes::all_predictors()) %>%
   themis::step_smote(y) %>%
   recipes::prep()
-```
 
-    ## Registered S3 methods overwritten by 'themis':
-    ##   method                  from   
-    ##   bake.step_downsample    recipes
-    ##   bake.step_upsample      recipes
-    ##   prep.step_downsample    recipes
-    ##   prep.step_upsample      recipes
-    ##   tidy.step_downsample    recipes
-    ##   tidy.step_upsample      recipes
-    ##   tunable.step_downsample recipes
-    ##   tunable.step_upsample   recipes
-
-``` r
 ## sort(table(recipes::bake(ds_rec, new_data = NULL)$y, useNA = "always"))
 
 smoted <- recipes::bake(ds_rec, new_data = NULL)
@@ -151,12 +130,18 @@ smoted_vals <- smoted[, ncol(smoted)]
 smoted <- smoted[, -ncol(smoted)]
 ```
 
+### Partitioning data
+
 ``` r
 which_dtm <- smoted
 vals <- smoted_vals$y
 
 set.seed(134)
-parts <- sample(1:2, size = length(vals), prob=c(0.75, 0.25), replace = TRUE) ## why T -- ??
+parts <- sample(1:2, 
+                size = length(vals),
+                prob=c(0.75, 0.25), 
+                replace = TRUE) ## why T -- ??
+
 trainx <- which_dtm [parts == 1,]
 testx <- which_dtm[parts == 2,]
 
@@ -165,7 +150,7 @@ y_train <- as.factor(vals[parts == 1])
 y_test <- as.factor(vals[parts == 2])
 ```
 
-### Naive Bayes classifier –
+### Naive Bayes classifier
 
 ``` r
 nb0 <- e1071::naiveBayes(trainx, y_train, laplace = 0.5) 
@@ -177,26 +162,26 @@ caret::confusionMatrix(prediction, y_test)
     ## 
     ##           Reference
     ## Prediction    0    1
-    ##          0 1063  148
-    ##          1  434 1323
+    ##          0 1042  175
+    ##          1  455 1296
     ##                                           
-    ##                Accuracy : 0.8039          
-    ##                  95% CI : (0.7892, 0.8181)
+    ##                Accuracy : 0.7877          
+    ##                  95% CI : (0.7726, 0.8023)
     ##     No Information Rate : 0.5044          
     ##     P-Value [Acc > NIR] : < 2.2e-16       
     ##                                           
-    ##                   Kappa : 0.6084          
+    ##                   Kappa : 0.5761          
     ##                                           
     ##  Mcnemar's Test P-Value : < 2.2e-16       
     ##                                           
-    ##             Sensitivity : 0.7101          
-    ##             Specificity : 0.8994          
-    ##          Pos Pred Value : 0.8778          
-    ##          Neg Pred Value : 0.7530          
+    ##             Sensitivity : 0.6961          
+    ##             Specificity : 0.8810          
+    ##          Pos Pred Value : 0.8562          
+    ##          Neg Pred Value : 0.7401          
     ##              Prevalence : 0.5044          
-    ##          Detection Rate : 0.3582          
-    ##    Detection Prevalence : 0.4080          
-    ##       Balanced Accuracy : 0.8047          
+    ##          Detection Rate : 0.3511          
+    ##    Detection Prevalence : 0.4100          
+    ##       Balanced Accuracy : 0.7885          
     ##                                           
     ##        'Positive' Class : 0               
     ## 
@@ -218,26 +203,26 @@ caret::confusionMatrix(prediction, y_test)
     ## 
     ##           Reference
     ## Prediction    0    1
-    ##          0 1289   68
-    ##          1  208 1403
-    ##                                          
-    ##                Accuracy : 0.907          
-    ##                  95% CI : (0.896, 0.9172)
-    ##     No Information Rate : 0.5044         
-    ##     P-Value [Acc > NIR] : < 2.2e-16      
-    ##                                          
-    ##                   Kappa : 0.8142         
-    ##                                          
-    ##  Mcnemar's Test P-Value : < 2.2e-16      
-    ##                                          
-    ##             Sensitivity : 0.8611         
-    ##             Specificity : 0.9538         
-    ##          Pos Pred Value : 0.9499         
-    ##          Neg Pred Value : 0.8709         
-    ##              Prevalence : 0.5044         
-    ##          Detection Rate : 0.4343         
-    ##    Detection Prevalence : 0.4572         
-    ##       Balanced Accuracy : 0.9074         
-    ##                                          
-    ##        'Positive' Class : 0              
+    ##          0 1289   77
+    ##          1  208 1394
+    ##                                           
+    ##                Accuracy : 0.904           
+    ##                  95% CI : (0.8928, 0.9143)
+    ##     No Information Rate : 0.5044          
+    ##     P-Value [Acc > NIR] : < 2.2e-16       
+    ##                                           
+    ##                   Kappa : 0.8081          
+    ##                                           
+    ##  Mcnemar's Test P-Value : 1.355e-14       
+    ##                                           
+    ##             Sensitivity : 0.8611          
+    ##             Specificity : 0.9477          
+    ##          Pos Pred Value : 0.9436          
+    ##          Neg Pred Value : 0.8702          
+    ##              Prevalence : 0.5044          
+    ##          Detection Rate : 0.4343          
+    ##    Detection Prevalence : 0.4602          
+    ##       Balanced Accuracy : 0.9044          
+    ##                                           
+    ##        'Positive' Class : 0               
     ## 
