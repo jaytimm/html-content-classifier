@@ -1,18 +1,18 @@
--   [Introduction](#introduction)
+## Build html content classifier
+
+> Extract main text content from web page. Remove boilerplate, ads,
+> non-relevant content. Supervised and unsupervised. No Java dependency.
+
 -   [Extract web text](#extract-web-text)
 -   [Previous approach](#previous-approach)
 -   [Manual annotation](#manual-annotation)
 -   [Feature-based node filtering](#feature-based-node-filtering)
--   [sentence/node representation](#sentence/node-representation)
--   [Using SMOTE](#using-smote)
--   [Partitioning data](#partitioning-data)
--   [Naive Bayes classifier](#naive-bayes-classifier)
--   [SVM](#svm)
-
-## Introduction
-
-> Extract main text content from web page. Remove boilerplate, ads,
-> non-relevant content. Supervised and unsupervised. No Java dependency.
+-   [Sentence-term matrix](#sentence-term-matrix)
+-   [Model details](#model-details)
+    -   [Using SMOTE](#using-smote)
+    -   [Partitioning data](#partitioning-data)
+    -   [Naive Bayes classifier](#naive-bayes-classifier)
+    -   [SVM](#svm)
 
 ``` r
 remotes::install_github("jaytimm/quicknews")
@@ -181,7 +181,7 @@ table(f1$is_junk)
     ##    0    1 
     ## 5998 1067
 
-## sentence/node representation
+## Sentence-term matrix
 
 ``` r
 clr_spacify_txt <- function (text) {
@@ -214,7 +214,9 @@ fdtm <- data.frame(as.matrix(dtm))
 fdtm0 <- janitor::clean_names(fdtm)
 ```
 
-## Using SMOTE
+## Model details
+
+### Using SMOTE
 
 ``` r
 z0 <- cbind(y = as.factor(f1$is_junk), fdtm0)
@@ -231,7 +233,7 @@ smoted_vals <- smoted[, ncol(smoted)]
 smoted <- smoted[, -ncol(smoted)]
 ```
 
-## Partitioning data
+### Partitioning data
 
 ``` r
 which_dtm <- smoted
@@ -251,7 +253,7 @@ y_train <- as.factor(vals[parts == 1])
 y_test <- as.factor(vals[parts == 2])
 ```
 
-## Naive Bayes classifier
+### Naive Bayes classifier
 
 ``` r
 nb0 <- e1071::naiveBayes(trainx, y_train, laplace = 0.5) 
@@ -263,31 +265,31 @@ caret::confusionMatrix(prediction, y_test)
     ## 
     ##           Reference
     ## Prediction    0    1
-    ##          0 1067  186
-    ##          1  430 1285
+    ##          0 1066  175
+    ##          1  431 1296
     ##                                           
-    ##                Accuracy : 0.7925          
-    ##                  95% CI : (0.7774, 0.8069)
+    ##                Accuracy : 0.7958          
+    ##                  95% CI : (0.7809, 0.8102)
     ##     No Information Rate : 0.5044          
     ##     P-Value [Acc > NIR] : < 2.2e-16       
     ##                                           
-    ##                   Kappa : 0.5855          
+    ##                   Kappa : 0.5922          
     ##                                           
     ##  Mcnemar's Test P-Value : < 2.2e-16       
     ##                                           
-    ##             Sensitivity : 0.7128          
-    ##             Specificity : 0.8736          
-    ##          Pos Pred Value : 0.8516          
-    ##          Neg Pred Value : 0.7493          
+    ##             Sensitivity : 0.7121          
+    ##             Specificity : 0.8810          
+    ##          Pos Pred Value : 0.8590          
+    ##          Neg Pred Value : 0.7504          
     ##              Prevalence : 0.5044          
-    ##          Detection Rate : 0.3595          
-    ##    Detection Prevalence : 0.4222          
-    ##       Balanced Accuracy : 0.7932          
+    ##          Detection Rate : 0.3592          
+    ##    Detection Prevalence : 0.4181          
+    ##       Balanced Accuracy : 0.7966          
     ##                                           
     ##        'Positive' Class : 0               
     ## 
 
-## SVM
+### SVM
 
 ``` r
 setwd(local_dir)
@@ -304,26 +306,26 @@ caret::confusionMatrix(prediction, y_test)
     ## 
     ##           Reference
     ## Prediction    0    1
-    ##          0 1289   87
-    ##          1  208 1384
+    ##          0 1289   84
+    ##          1  208 1387
     ##                                           
-    ##                Accuracy : 0.9006          
-    ##                  95% CI : (0.8893, 0.9111)
+    ##                Accuracy : 0.9016          
+    ##                  95% CI : (0.8903, 0.9121)
     ##     No Information Rate : 0.5044          
     ##     P-Value [Acc > NIR] : < 2.2e-16       
     ##                                           
-    ##                   Kappa : 0.8013          
+    ##                   Kappa : 0.8034          
     ##                                           
-    ##  Mcnemar's Test P-Value : 2.815e-12       
+    ##  Mcnemar's Test P-Value : 6.109e-13       
     ##                                           
     ##             Sensitivity : 0.8611          
-    ##             Specificity : 0.9409          
-    ##          Pos Pred Value : 0.9368          
-    ##          Neg Pred Value : 0.8693          
+    ##             Specificity : 0.9429          
+    ##          Pos Pred Value : 0.9388          
+    ##          Neg Pred Value : 0.8696          
     ##              Prevalence : 0.5044          
     ##          Detection Rate : 0.4343          
-    ##    Detection Prevalence : 0.4636          
-    ##       Balanced Accuracy : 0.9010          
+    ##    Detection Prevalence : 0.4626          
+    ##       Balanced Accuracy : 0.9020          
     ##                                           
     ##        'Positive' Class : 0               
     ## 
