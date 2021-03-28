@@ -1,3 +1,14 @@
+-   [Introduction](#introduction)
+-   [Extract web text](#extract-web-text)
+-   [Previous approach](#previous-approach)
+-   [Manual annotation](#manual-annotation)
+-   [Feature-based node filtering](#feature-based-node-filtering)
+-   [sentence/node representation](#sentence/node-representation)
+-   [Using SMOTE](#using-smote)
+-   [Partitioning data](#partitioning-data)
+-   [Naive Bayes classifier](#naive-bayes-classifier)
+-   [SVM](#svm)
+
 ## Introduction
 
 > Extract main text content from web page. Remove boilerplate, ads,
@@ -252,26 +263,26 @@ caret::confusionMatrix(prediction, y_test)
     ## 
     ##           Reference
     ## Prediction    0    1
-    ##          0 1066  170
-    ##          1  431 1301
+    ##          0 1067  186
+    ##          1  430 1285
     ##                                           
-    ##                Accuracy : 0.7975          
-    ##                  95% CI : (0.7826, 0.8118)
+    ##                Accuracy : 0.7925          
+    ##                  95% CI : (0.7774, 0.8069)
     ##     No Information Rate : 0.5044          
     ##     P-Value [Acc > NIR] : < 2.2e-16       
     ##                                           
-    ##                   Kappa : 0.5956          
+    ##                   Kappa : 0.5855          
     ##                                           
     ##  Mcnemar's Test P-Value : < 2.2e-16       
     ##                                           
-    ##             Sensitivity : 0.7121          
-    ##             Specificity : 0.8844          
-    ##          Pos Pred Value : 0.8625          
-    ##          Neg Pred Value : 0.7512          
+    ##             Sensitivity : 0.7128          
+    ##             Specificity : 0.8736          
+    ##          Pos Pred Value : 0.8516          
+    ##          Neg Pred Value : 0.7493          
     ##              Prevalence : 0.5044          
-    ##          Detection Rate : 0.3592          
-    ##    Detection Prevalence : 0.4164          
-    ##       Balanced Accuracy : 0.7983          
+    ##          Detection Rate : 0.3595          
+    ##    Detection Prevalence : 0.4222          
+    ##       Balanced Accuracy : 0.7932          
     ##                                           
     ##        'Positive' Class : 0               
     ## 
@@ -293,26 +304,26 @@ caret::confusionMatrix(prediction, y_test)
     ## 
     ##           Reference
     ## Prediction    0    1
-    ##          0 1289   89
-    ##          1  208 1382
+    ##          0 1289   87
+    ##          1  208 1384
     ##                                           
-    ##                Accuracy : 0.8999          
-    ##                  95% CI : (0.8886, 0.9105)
+    ##                Accuracy : 0.9006          
+    ##                  95% CI : (0.8893, 0.9111)
     ##     No Information Rate : 0.5044          
     ##     P-Value [Acc > NIR] : < 2.2e-16       
     ##                                           
-    ##                   Kappa : 0.8             
+    ##                   Kappa : 0.8013          
     ##                                           
-    ##  Mcnemar's Test P-Value : 7.539e-12       
+    ##  Mcnemar's Test P-Value : 2.815e-12       
     ##                                           
     ##             Sensitivity : 0.8611          
-    ##             Specificity : 0.9395          
-    ##          Pos Pred Value : 0.9354          
-    ##          Neg Pred Value : 0.8692          
+    ##             Specificity : 0.9409          
+    ##          Pos Pred Value : 0.9368          
+    ##          Neg Pred Value : 0.8693          
     ##              Prevalence : 0.5044          
     ##          Detection Rate : 0.4343          
-    ##    Detection Prevalence : 0.4643          
-    ##       Balanced Accuracy : 0.9003          
+    ##    Detection Prevalence : 0.4636          
+    ##       Balanced Accuracy : 0.9010          
     ##                                           
     ##        'Positive' Class : 0               
     ## 
