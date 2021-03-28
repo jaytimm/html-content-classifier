@@ -77,7 +77,7 @@ txts0 %>% filter(id == 11) %>% knitr::kable()
 | 11  | h1   | Subscribe Today                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | 11  | p    | Copyright © The Mining Journal \| <https://www.miningjournal.net> \| 249 W. Washington, Marquette, MI 49855 \| 906-228-2500 \| Ogden Newspapers \| The Nutting Company                                                                                                                                                                                                                                                                                                                                                                                               |
 
-## Previous appraoch
+## Previous approach
 
 Via `boilerpipeR`.
 
@@ -170,7 +170,7 @@ table(f1$is_junk)
     ##    0    1 
     ## 5998 1067
 
-### sentence/node representation
+## sentence/node representation
 
 ``` r
 clr_spacify_txt <- function (text) {
@@ -203,7 +203,7 @@ fdtm <- data.frame(as.matrix(dtm))
 fdtm0 <- janitor::clean_names(fdtm)
 ```
 
-### Using SMOTE
+## Using SMOTE
 
 ``` r
 z0 <- cbind(y = as.factor(f1$is_junk), fdtm0)
@@ -220,7 +220,7 @@ smoted_vals <- smoted[, ncol(smoted)]
 smoted <- smoted[, -ncol(smoted)]
 ```
 
-### Partitioning data
+## Partitioning data
 
 ``` r
 which_dtm <- smoted
@@ -240,7 +240,7 @@ y_train <- as.factor(vals[parts == 1])
 y_test <- as.factor(vals[parts == 2])
 ```
 
-### Naive Bayes classifier
+## Naive Bayes classifier
 
 ``` r
 nb0 <- e1071::naiveBayes(trainx, y_train, laplace = 0.5) 
@@ -252,31 +252,31 @@ caret::confusionMatrix(prediction, y_test)
     ## 
     ##           Reference
     ## Prediction    0    1
-    ##          0 1063  186
-    ##          1  434 1285
-    ##                                          
-    ##                Accuracy : 0.7911         
-    ##                  95% CI : (0.776, 0.8056)
-    ##     No Information Rate : 0.5044         
-    ##     P-Value [Acc > NIR] : < 2.2e-16      
-    ##                                          
-    ##                   Kappa : 0.5828         
-    ##                                          
-    ##  Mcnemar's Test P-Value : < 2.2e-16      
-    ##                                          
-    ##             Sensitivity : 0.7101         
-    ##             Specificity : 0.8736         
-    ##          Pos Pred Value : 0.8511         
-    ##          Neg Pred Value : 0.7475         
-    ##              Prevalence : 0.5044         
-    ##          Detection Rate : 0.3582         
-    ##    Detection Prevalence : 0.4208         
-    ##       Balanced Accuracy : 0.7918         
-    ##                                          
-    ##        'Positive' Class : 0              
+    ##          0 1066  170
+    ##          1  431 1301
+    ##                                           
+    ##                Accuracy : 0.7975          
+    ##                  95% CI : (0.7826, 0.8118)
+    ##     No Information Rate : 0.5044          
+    ##     P-Value [Acc > NIR] : < 2.2e-16       
+    ##                                           
+    ##                   Kappa : 0.5956          
+    ##                                           
+    ##  Mcnemar's Test P-Value : < 2.2e-16       
+    ##                                           
+    ##             Sensitivity : 0.7121          
+    ##             Specificity : 0.8844          
+    ##          Pos Pred Value : 0.8625          
+    ##          Neg Pred Value : 0.7512          
+    ##              Prevalence : 0.5044          
+    ##          Detection Rate : 0.3592          
+    ##    Detection Prevalence : 0.4164          
+    ##       Balanced Accuracy : 0.7983          
+    ##                                           
+    ##        'Positive' Class : 0               
     ## 
 
-### SVM
+## SVM
 
 ``` r
 setwd(local_dir)
