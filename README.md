@@ -77,19 +77,63 @@ txts0 %>% filter(id == 11) %>% knitr::kable()
 | 11  | h1   | Subscribe Today                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | 11  | p    | Copyright © The Mining Journal \| <https://www.miningjournal.net> \| 249 W. Washington, Marquette, MI 49855 \| 906-228-2500 \| Ogden Newspapers \| The Nutting Company                                                                                                                                                                                                                                                                                                                                                                                               |
 
-## Manual annotation
+> Previous appraoch via `boilerpipeR` – which is good – but not
+> fantastic – Java dependency – but it also the best that I have used in
+> R –
+
+``` r
+y1 <- RCurl::getURL(ks, .encoding='UTF-8', ssl.verifypeer = TRUE,
+                     .opts = RCurl::curlOptions(followlocation = TRUE, verbose = F))
+# 
+cat(boilerpipeR::ArticleExtractor(y1))
+```
+
+    ## 14 people injured in suspected suicide bombing outside Catholic church in Indonesia
+    ## By Jamaluddin Masrur, CNN, and Reuters
+    ## Updated 7:27 AM ET, Sun March 28, 2021
+    ## A police officer stands guard near the church in Makassar, South Sulawesi, Indonesia after Sunday's explosion.
+    ## Jakarta, Indonesia  (CNN)
+    ## Fourteen people were hospitalized with injuries following a suspected suicide bombing outside a church in Makassar City, Indonesia, on Sunday, police said.
+    ## The two suspected bombers both died, according to Indonesian police, and so far no other deaths have been reported. A security guard who tried to stop two suspected bombers from entering the churchyard is among the injured, Indonesian Police Inspector General Argo Yuwono told media.
+    ## The suspects used a motorbike and detonated outside the church which was holding Easter Holy Week services when they were stopped from entering the yard.
+    ## Indonesian police carry the remains of a suspected suicide bomber after an explosion outside a church in Makassar on March 28.
+    ## Indonesian police examine the site outside a church after an explosion in Makassar on March 28.
+    ## There has been no immediate claim of responsibility for the attack. Police say the investigation with the anti-terror unit is ongoing.
+    ## Authorities were looking into which networks the bombers came from and if the attack was linked to recent arrests of suspected militants, Reuters news agency reported Yuwono as saying.
+    ## Read More
+    ## Indonesian president Joko Widodo strongly condemned the attack in a video broadcast, describing the attack as as an "act of terrorism," Reuters reported.
+    ## He urged people to remain calm and said the government would ensure that everybody can worship freely, "without fear."
+    ## Search
+
+## Manual annotation: `is_junk`
+
+``` r
+setwd(local_dir)
+og <- readRDS('final_annotation.rds')
+
+og %>% 
+  filter(type == 'p') %>% 
+  head() %>% knitr::kable()
+```
+
+| sid | id  | place | type | text                                                                                                                                                                                                                                                                                                                                   | is_junk |
+|----:|:----|------:|:-----|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------:|
+|   2 | 1   |     2 | p    | Advertisement                                                                                                                                                                                                                                                                                                                          |       1 |
+|   3 | 1   |     3 | p    | Supported by                                                                                                                                                                                                                                                                                                                           |       1 |
+|   5 | 1   |     5 | p    | In Britain and beyond, protesters on the left and right are rebelling against virus restrictions, drawing harsh police responses — and questions about the officers’ legitimacy.                                                                                                                                                       |       0 |
+|   6 | 1   |     6 | p    | By Mark Landler and Stephen Castle                                                                                                                                                                                                                                                                                                     |       1 |
+|   7 | 1   |     7 | p    | LONDON — In Bristol, an English college town where the pubs are usually packed with students, there were fiery clashes between the police and protesters. In Kassel, a German city known for its ambitious contemporary art festival, the police unleashed pepper spray and water cannons on anti-lockdown marchers.                   |       0 |
+|   8 | 1   |     8 | p    | A year after European leaders ordered people into their homes to curb a deadly pandemic, thousands are pouring into streets and squares. Often, they are met by batons and shields, raising questions about the tactics and role of the police in societies where personal liberties have already given way to public health concerns. |       0 |
 
 ## Feature-based node filtering
 
-> Sentence-ending:
+1.  Sentence-ending & (2) `See more stories`-issue:
 
 ``` r
 og$has_ellipses <- ifelse(grepl('\\.\\.\\.(.)?$', 
                                 trimws(og$text)), 1, 0)
 og$has_stop <-  ifelse(grepl('(\\.|\\!|\\?)(.)?$', trimws(og$text)), 1, 0)
 ```
-
-> `See more stories`-issue:
 
 ``` r
 og$has_latest <- ifelse(grepl('^latest( .*)? news$|^more( .*)? stories$',
@@ -108,7 +152,7 @@ table(f0$is_junk)
 
     ## 
     ##    0    1 
-    ## 6676 4187
+    ## 6675 4188
 
 ``` r
 f1 <- subset(f0, 
@@ -207,28 +251,28 @@ caret::confusionMatrix(prediction, y_test)
     ## 
     ##           Reference
     ## Prediction    0    1
-    ##          0 1074  190
-    ##          1  423 1281
-    ##                                           
-    ##                Accuracy : 0.7935          
-    ##                  95% CI : (0.7784, 0.8079)
-    ##     No Information Rate : 0.5044          
-    ##     P-Value [Acc > NIR] : < 2.2e-16       
-    ##                                           
-    ##                   Kappa : 0.5875          
-    ##                                           
-    ##  Mcnemar's Test P-Value : < 2.2e-16       
-    ##                                           
-    ##             Sensitivity : 0.7174          
-    ##             Specificity : 0.8708          
-    ##          Pos Pred Value : 0.8497          
-    ##          Neg Pred Value : 0.7518          
-    ##              Prevalence : 0.5044          
-    ##          Detection Rate : 0.3619          
-    ##    Detection Prevalence : 0.4259          
-    ##       Balanced Accuracy : 0.7941          
-    ##                                           
-    ##        'Positive' Class : 0               
+    ##          0 1061  184
+    ##          1  436 1287
+    ##                                          
+    ##                Accuracy : 0.7911         
+    ##                  95% CI : (0.776, 0.8056)
+    ##     No Information Rate : 0.5044         
+    ##     P-Value [Acc > NIR] : < 2.2e-16      
+    ##                                          
+    ##                   Kappa : 0.5828         
+    ##                                          
+    ##  Mcnemar's Test P-Value : < 2.2e-16      
+    ##                                          
+    ##             Sensitivity : 0.7088         
+    ##             Specificity : 0.8749         
+    ##          Pos Pred Value : 0.8522         
+    ##          Neg Pred Value : 0.7470         
+    ##              Prevalence : 0.5044         
+    ##          Detection Rate : 0.3575         
+    ##    Detection Prevalence : 0.4195         
+    ##       Balanced Accuracy : 0.7918         
+    ##                                          
+    ##        'Positive' Class : 0              
     ## 
 
 ### Support Vector Machines
@@ -248,26 +292,26 @@ caret::confusionMatrix(prediction, y_test)
     ## 
     ##           Reference
     ## Prediction    0    1
-    ##          0 1289   75
-    ##          1  208 1396
-    ##                                          
-    ##                Accuracy : 0.9046         
-    ##                  95% CI : (0.8935, 0.915)
-    ##     No Information Rate : 0.5044         
-    ##     P-Value [Acc > NIR] : < 2.2e-16      
-    ##                                          
-    ##                   Kappa : 0.8094         
-    ##                                          
-    ##  Mcnemar's Test P-Value : 4.275e-15      
-    ##                                          
-    ##             Sensitivity : 0.8611         
-    ##             Specificity : 0.9490         
-    ##          Pos Pred Value : 0.9450         
-    ##          Neg Pred Value : 0.8703         
-    ##              Prevalence : 0.5044         
-    ##          Detection Rate : 0.4343         
-    ##    Detection Prevalence : 0.4596         
-    ##       Balanced Accuracy : 0.9050         
-    ##                                          
-    ##        'Positive' Class : 0              
+    ##          0 1289   89
+    ##          1  208 1382
+    ##                                           
+    ##                Accuracy : 0.8999          
+    ##                  95% CI : (0.8886, 0.9105)
+    ##     No Information Rate : 0.5044          
+    ##     P-Value [Acc > NIR] : < 2.2e-16       
+    ##                                           
+    ##                   Kappa : 0.8             
+    ##                                           
+    ##  Mcnemar's Test P-Value : 7.539e-12       
+    ##                                           
+    ##             Sensitivity : 0.8611          
+    ##             Specificity : 0.9395          
+    ##          Pos Pred Value : 0.9354          
+    ##          Neg Pred Value : 0.8692          
+    ##              Prevalence : 0.5044          
+    ##          Detection Rate : 0.4343          
+    ##    Detection Prevalence : 0.4643          
+    ##       Balanced Accuracy : 0.9003          
+    ##                                           
+    ##        'Positive' Class : 0               
     ## 
